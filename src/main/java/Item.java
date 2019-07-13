@@ -1,15 +1,7 @@
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Item {
-    /*
-    public enum criteriosOrdenamiento{
-        PRICE,
-        LISTING_TYPE
-    };
-
-    public static criteriosOrdenamiento criterioParaOrdernar = criteriosOrdenamiento.PRICE;
-    */
-
+public class Item implements Serializable {
 
     private String id;
     private String site_id;

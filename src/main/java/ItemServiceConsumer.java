@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 public class ItemServiceConsumer {
 
     UrlConsumer urlConsumer = new UrlConsumer();
+    //Change to ItemServiceFileImpl to test file persistent version
     final ItemService itemServiceMapImpl = new ItemServiceMapImpl();
 
     private List<Item> getItemsSearch(String itemToSearch) {
