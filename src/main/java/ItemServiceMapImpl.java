@@ -24,10 +24,19 @@ public class ItemServiceMapImpl implements ItemService {
         {
             itemsList = new ArrayList<Item>();
         }
+        else{
+            /**
+             * List returned by Arrays.asList()
+             * doesn't support add method
+             */
+            itemsList = new ArrayList<>(itemsList);
+        }
 
-        itemsList.add(item);
+        if(!itemsList.contains(item)){
+            itemsList.add(item);
+        }
 
-        itemSearchMap.put(key, itemsList);
+        itemSearchMap.replace(key, itemsList);
     }
 
     @Override
@@ -37,8 +46,8 @@ public class ItemServiceMapImpl implements ItemService {
     }
 
     @Override
-    public Item getItem(String searchId, String itemId) {
-        return itemSearchMap.get(searchId)
+    public Item getItem(String key, String itemId) {
+        return itemSearchMap.get(key)
                 .stream()
                 .filter(item -> itemId.equals(item.getId()))
                 .findAny()
@@ -46,11 +55,11 @@ public class ItemServiceMapImpl implements ItemService {
     }
 
     @Override
-    public Item editItem(String searchId, Item item) throws ItemException {
-        Item itemToReturn = getItem(searchId, item.getId());
+    public Item editItem(String key, Item item) throws ItemException {
+        Item itemToReturn = getItem(key, item.getId());
 
         if(itemToReturn != null){
-            itemSearchMap.get(searchId)
+            itemSearchMap.get(key)
                     .stream()
                     .map(o -> o.getId().equals(item.getId()) ? item : o)
                     .findAny()
@@ -65,18 +74,24 @@ public class ItemServiceMapImpl implements ItemService {
     }
 
     @Override
-    public void deleteItem(String id) {
+    public void deleteItem(String key, Item item) {
+        List<Item> itemsList = itemSearchMap.get(key);
 
+        if(itemsList != null){
+            itemsList.remove(item);
+        }
+
+        itemSearchMap.put(key, itemsList);
     }
 
     @Override
-    public boolean searchExists(String id) {
-        return itemSearchMap.containsKey(id);
+    public boolean searchExists(String key) {
+        return itemSearchMap.containsKey(key);
     }
 
     @Override
-    public boolean itemSearchExists(String searchId, String itemId) {
-        return itemSearchMap.get(searchId)
+    public boolean itemSearchExists(String key, String itemId) {
+        return itemSearchMap.get(key)
                 .stream()
                 .map(Item::getId)
                 .anyMatch(itemId::equals);

@@ -40,7 +40,7 @@ public class MeliSearch {
                         (StatusResponse.SUCCESS)));
             });
 
-            post("/search/:search/:id", (request, response) -> {
+            post("/search/:search/:id",  (request, response) -> {
                 response.type("application/json");
                 String searchKeyToAdd = "q=" + request.params(":search");
                 String idItemToAdd = request.params(":id");
@@ -53,7 +53,7 @@ public class MeliSearch {
 
             put("/search/:search/:id", (request, response) -> {
                 response.type("application/json");
-                String searchKeyToAdd= "q=" + request.params(":search");
+                String searchKeyToAdd = "q=" + request.params(":search");
                 String idItemToEdit = request.params(":id");
                 Item itemToAdd = new Gson().fromJson(request.body(), Item.class);
                 itemToAdd.setId(idItemToEdit);
@@ -67,6 +67,16 @@ public class MeliSearch {
                 }
 
                 return new Gson().toJson(standardResponse);
+            });
+
+            delete("/search/:search", (request, response) -> {
+                response.type("application/json");
+                String searchKeyToDelete = "q=" + request.params(":search");
+                Item itemToDelete = new Gson().fromJson(request.body(), Item.class);
+                itemServiceConsumer.deleteElementFromApi(searchKeyToDelete, itemToDelete);
+
+                return new Gson().toJson(new StandardResponse(
+                        (StatusResponse.SUCCESS)));
             });
 
         });

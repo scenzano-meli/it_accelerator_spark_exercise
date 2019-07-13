@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemServiceConsumer {
 
@@ -22,37 +23,70 @@ public class ItemServiceConsumer {
         return itemsList;
     }
 
+    private List<Item> orderList(List<Item> itemsList, String filter, String ordering){
+
+        switch (filter){
+            case "price":
+                if(ordering == null || ordering.equals("asc")){
+                    Collections.sort(itemsList, Comparator.comparingDouble(Item::getPrice));
+                }
+                else if(ordering.equals("desc")){
+                    Collections.sort(itemsList, Comparator.comparingDouble(Item::getPrice).reversed());
+                }
+                break;
+            case "listing":
+                if(ordering == null || ordering.equals("asc")){
+                    Collections.sort(itemsList, Comparator.comparing(Item::getListing_type_id));
+                }
+                else if(ordering.equals("desc")){
+                    Collections.sort(itemsList, Comparator.comparing(Item::getListing_type_id).reversed());
+                }
+                break;
+
+
+            default: break;
+        };
+
+        return itemsList;
+    }
+
     public JsonElement getElementsFromApi(String itemToSearch, String filter, String ordering){
         JsonElement data;
         List<Item> itemsList = getItemsSearch(itemToSearch);
 
         data = new Gson().toJsonTree(itemsList);
 
-        if(filter != null && filter.equals("titles")){
+        if(filter != null)
+        {
+            if(filter.equals("titles")){
+                List<String> titles = new ArrayList<String>();
+                for(Item item : itemsList){
+                    titles.add(item.gettitle());
+                }
+                data = new Gson().toJsonTree(titles);
+            }
+            else if(filter.equals("thumbnail")){
+                List<Item> itemsWithThumbnail  = new ArrayList<Item>();
+                for(Item item : itemsList){
+                    if(String.join(" ", item.getTags()).contains("good_quality_thumbnail")){
+                        itemsWithThumbnail.add(item);
+                    }
+                }
+                data = new Gson().toJsonTree(itemsWithThumbnail);
+            }
+            else if(filter.equals("price-range")){
+                String[]rangeValues = (ordering == null ? "0-" + Integer.MAX_VALUE : ordering).split("-");
+                List<Item> itemListFiltered = itemsList
+                        .stream()
+                        .filter(it -> (it.getPrice() > Integer.parseInt(rangeValues[0]) && it.getPrice() < Integer.parseInt(rangeValues[1])))
+                        .collect(Collectors.toList());
 
-            List<String> titles = new ArrayList<String>();
-            for(Item item : itemsList){
-                titles.add(item.gettitle());
+                data = new Gson().toJsonTree(itemListFiltered);
             }
-            data = new Gson().toJsonTree(titles);
-        }
-        else if(filter != null && filter.equals("price")){
-            if(ordering == null || ordering.equals("asc")){
-                Collections.sort(itemsList, Comparator.comparingDouble(Item::getPrice));
+            else {
+                orderList(itemsList, (filter == null ? "": filter), (ordering == null ? "": ordering));
+                data = new Gson().toJsonTree(itemsList);
             }
-            else if(ordering.equals("desc")){
-                Collections.sort(itemsList, Comparator.comparingDouble(Item::getPrice).reversed());
-            }
-            data = new Gson().toJsonTree(itemsList);
-        }
-        else if(filter != null && filter.equals("listing")){
-            if(ordering == null || ordering.equals("asc")){
-                Collections.sort(itemsList, Comparator.comparing(Item::getListing_type_id));
-            }
-            else if(ordering.equals("desc")){
-                Collections.sort(itemsList, Comparator.comparing(Item::getListing_type_id).reversed());
-            }
-            data = new Gson().toJsonTree(itemsList);
         }
 
         return data;
@@ -76,5 +110,8 @@ public class ItemServiceConsumer {
         itemServiceMapImpl.editItem(searchItem, item);
     }
 
+    public void deleteElementFromApi(String searchItem, Item item) {
+        itemServiceMapImpl.deleteItem(searchItem, item);
+    }
 
 }

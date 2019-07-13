@@ -6,10 +6,10 @@ public interface ItemService {
     public void addItemsList(String key, List<Item> itemsList);
     public void addItem(String key, Item item);
     public Collection<Item> getItems(String key);
-    public Item getItem(String searchId, String itemId);
-    public Item editItem(String searchId, Item item)
+    public Item getItem(String key, String itemId);
+    public Item editItem(String key, Item item)
         throws ItemException;
-    public void deleteItem(String id);
-    public boolean searchExists(String id);
-    public boolean itemSearchExists(String searchId, String itemId);
+    public void deleteItem(String key, Item item);
+    public boolean searchExists(String key);
+    public boolean itemSearchExists(String key, String itemId);
 }
