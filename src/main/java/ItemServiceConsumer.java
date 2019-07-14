@@ -1,6 +1,6 @@
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,6 +9,60 @@ public class ItemServiceConsumer {
     UrlConsumer urlConsumer = new UrlConsumer();
     //Change to ItemServiceFileImpl to test file persistent version
     final ItemService itemServiceMapImpl = new ItemServiceMapImpl();
+    List<Currency> currencysList;
+
+    public ItemServiceConsumer (){
+
+        this.currencysList = new ArrayList<Currency> ();
+
+        Currency[] currencysArray;
+        Gson gson = new Gson();
+        String urlResponse= "";
+
+        //need to work on catch
+        try {
+            urlResponse = urlConsumer.consumeUrl("https://api.mercadolibre.com/currencies", "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        currencysArray = gson.fromJson(urlResponse, Currency[].class);
+        this.currencysList = Arrays.asList(currencysArray);
+    }
+
+    public List<Item> getItemListFromJsonUrl(String searchValue){
+
+        List<Item> itemsList = new ArrayList<Item>();
+        Item[] itemsArray;
+        Gson gson = new Gson();
+        String urlResponse= "";
+
+        //need to work on catch
+        try {
+            urlResponse = urlConsumer.consumeUrl("https://api.mercadolibre.com/sites/MLA/search?", searchValue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * Here is De Deserialize we need to work on
+         */
+
+        GsonBuilder gsonBuilder = new GsonBuilder ();
+
+        JsonDeserializer<Item> deserializer = new ItemDeserializer(this.currencysList);
+        gsonBuilder.registerTypeAdapter(Item.class, deserializer);
+
+        gson = gsonBuilder.create();
+
+        JsonObject jobj = new Gson().fromJson(urlResponse, JsonObject.class);
+        String resultsJsonAsText = jobj.get("results").toString();
+
+        itemsArray = gson.fromJson(resultsJsonAsText, Item[].class);
+        itemsList = Arrays.asList(itemsArray);
+
+        return itemsList;
+    }
 
     private List<Item> getItemsSearch(String itemToSearch) {
         List<Item> itemsList;
@@ -17,7 +71,7 @@ public class ItemServiceConsumer {
             itemsList = (List<Item>)itemServiceMapImpl.getItems(itemToSearch);
         }
         else{
-            itemsList = urlConsumer.getListFromJsonUrl(itemToSearch);
+            itemsList = this.getItemListFromJsonUrl(itemToSearch);
             itemServiceMapImpl.addItemsList(itemToSearch, itemsList);
         }
 
@@ -62,7 +116,7 @@ public class ItemServiceConsumer {
             if(filter.equals("titles")){
                 List<String> titles = new ArrayList<String>();
                 for(Item item : itemsList){
-                    titles.add(item.gettitle());
+                    titles.add(item.getTitle());
                 }
                 data = new Gson().toJsonTree(titles);
             }

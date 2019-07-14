@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Currency {
 
     private String id;
@@ -36,4 +38,16 @@ public class Currency {
     public void setDecimal_places(int decimal_places) {
         this.decimal_places = decimal_places;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass () != o.getClass ()) return false;
+        Currency currency = (Currency) o;
+        return decimal_places == currency.decimal_places &&
+                Objects.equals (id, currency.id) &&
+                Objects.equals (symbol, currency.symbol) &&
+                Objects.equals (description, currency.description);
+    }
+
 }

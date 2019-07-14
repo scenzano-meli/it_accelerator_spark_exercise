@@ -7,17 +7,36 @@ public class Item implements Serializable {
     private String site_id;
     private String title;
     private double price;
-    private String currency_id;
+    private Currency currency;
     private String listing_type_id;
     private String stop_time;
     private String thumbnail;
     private String[] tags;
 
+    public Item(){
+        super();
+    }
+
+    public Item(String id, String site_id, String title, double price, Currency currency, String listing_type_id, String stop_time, String thumbnail, String[] tags) {
+        super();
+        this.id = id;
+        this.site_id = site_id;
+        this.title = title;
+        this.price = price;
+        this.currency = currency;
+        this.listing_type_id = listing_type_id;
+        this.stop_time = stop_time;
+        this.thumbnail = thumbnail;
+        this.tags = tags;
+    }
+
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {this.id = id;}
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSite_id() {
         return site_id;
@@ -27,11 +46,11 @@ public class Item implements Serializable {
         this.site_id = site_id;
     }
 
-    public String gettitle() {
+    public String getTitle() {
         return title;
     }
 
-    public void settitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -43,12 +62,12 @@ public class Item implements Serializable {
         this.price = price;
     }
 
-    public String getCurrency_id() {
-        return currency_id;
+    public Currency getCurrency() {
+        return currency;
     }
 
-    public void setCurrency_id(String currency_id) {
-        this.currency_id = currency_id;
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     public String getListing_type_id() {
@@ -114,7 +133,7 @@ public class Item implements Serializable {
                 (this.site_id.compareTo(elementoAComparar.site_id) == 0) &&
                 (this.title.compareTo(elementoAComparar.title) == 0) &&
                 (this.price == elementoAComparar.price) &&
-                (this.currency_id.compareTo(elementoAComparar.currency_id) == 0) &&
+                (this.currency.equals (elementoAComparar.getCurrency ())) &&
                 (this.listing_type_id.compareTo(elementoAComparar.listing_type_id) == 0) &&
                 (this.stop_time.compareTo(elementoAComparar.stop_time) == 0) &&
                 (this.thumbnail.compareTo(elementoAComparar.thumbnail) == 0) &&

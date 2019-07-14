@@ -1,4 +1,6 @@
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
@@ -70,31 +72,4 @@ public class UrlConsumer {
         return urlString;
 
     }
-
-    public List<Item> getListFromJsonUrl(String searchValue){
-
-        List<Item> itemsList = new ArrayList<Item>();
-        Item[] itemsArray;
-        Gson gson = new Gson();
-        String urlResponse= "";
-
-        //need to work on catch
-        try {
-            urlResponse = this.consumeUrl("https://api.mercadolibre.com/sites/MLA/search?", searchValue);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JsonObject jobj = new Gson().fromJson(urlResponse, JsonObject.class);
-        String resultsJsonAsText = jobj.get("results").toString();
-
-        itemsArray = gson.fromJson(resultsJsonAsText, Item[].class);
-        itemsList = Arrays.asList(itemsArray);
-
-        return itemsList;
-    }
-
-
-
-
 }
