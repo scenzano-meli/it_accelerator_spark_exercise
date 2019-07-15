@@ -44,10 +44,6 @@ public class ItemServiceConsumer {
             e.printStackTrace();
         }
 
-        /**
-         * Here is De Deserialize we need to work on
-         */
-
         GsonBuilder gsonBuilder = new GsonBuilder ();
 
         JsonDeserializer<Item> deserializer = new ItemDeserializer(this.currencysList);
@@ -97,8 +93,6 @@ public class ItemServiceConsumer {
                     Collections.sort(itemsList, Comparator.comparing(Item::getListing_type_id).reversed());
                 }
                 break;
-
-
             default: break;
         };
 
